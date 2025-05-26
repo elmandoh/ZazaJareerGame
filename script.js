@@ -26,17 +26,21 @@ let starBlink = 0;
 let treasureShake = 0;
 let fallingStars = [];
 let collisionFlash = 0;
+let resourcesLoaded = false;
+let errorMessage = "";
 
 function preload() {
   try {
     zazaImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png');
     jareerImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png');
     treasureImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png');
-    starImg = loadImage('https://cdn.pixabay.com/photo/2017/01/31/14/40/gold-2025645_1280.png');
-    rockImg = loadImage('https://cdn.pixabay.com/photo/2013/07/12/19/46/rock-156159_1280.png');
+    // استبدال الصور المكسورة بروابط مؤقتة من Placehold.co
+    starImg = loadImage('https://placehold.co/30x30/FFD700/FFD700/png');
+    rockImg = loadImage('https://placehold.co/40x40/808080/808080/png');
     collectSound = loadSound('https://freesound.org/data/previews/387/387232_5121236-lq.mp3');
     winSound = loadSound('https://freesound.org/data/previews/503/503744_5121236-lq.mp3');
   } catch (error) {
+    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع الصور إلى المستودع.";
     console.error("خطأ في تحميل الموارد:", error);
   }
 }
@@ -46,12 +50,16 @@ function setup() {
   canvas.parent('game-container');
   canvas.style('width', '100%');
   canvas.style('height', '100%');
-  if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg) {
-    console.error("فشل تحميل صورة واحدة على الأقل، تحقق من الروابط!");
+  
+  if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg || !collectSound || !winSound) {
+    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع الصور إلى المستودع.";
+  } else {
+    resourcesLoaded = true;
   }
-  resetLevel();
-  targetX = 50;
-  targetY = 500;
+
+  if (resourcesLoaded) {
+    resetLevel();
+  }
 }
 
 function resetLevel() {
@@ -75,18 +83,21 @@ function draw() {
   if (gameState === "welcome") {
     document.getElementById('welcome-screen').style.display = 'flex';
     document.getElementById('controls').style.display = 'none';
+    if (errorMessage) {
+      document.getElementById('loading-text').style.display = 'none';
+      document.getElementById('error-text').style.display = 'block';
+      document.getElementById('error-text').innerText = errorMessage;
+    }
   } else {
     document.getElementById('welcome-screen').style.display = 'none';
     document.getElementById('controls').style.display = 'flex';
     if (gameState === "playing") {
-      // تأثير وميض الاصطدام
       if (collisionFlash > 0) {
         fill(255, 0, 0, collisionFlash);
         rect(0, 0, width, height);
         collisionFlash -= 10;
       }
 
-      // تحريك الشخصية
       let dx = targetX - player.x + moveDirection.x * 10;
       let dy = targetY - player.y + moveDirection.y * 10;
       let distance = dist(player.x, player.y, targetX, targetY);
@@ -99,7 +110,6 @@ function draw() {
 
       if (player.img) image(player.img, player.x, player.y, 50, 50);
 
-      // وميض النجوم
       starBlink = (starBlink + 0.1) % TWO_PI;
       let starScale = 1 + sin(starBlink) * 0.1;
       for (let star of stars) {
@@ -112,7 +122,6 @@ function draw() {
         }
       }
 
-      // اهتزاز الكنز
       if (!treasure.collected && treasureImg) {
         let distanceToTreasure = dist(player.x, player.y, treasure.x, treasure.y);
         if (distanceToTreasure < 150) {
@@ -123,12 +132,10 @@ function draw() {
         image(treasureImg, treasure.x + treasureShake, treasure.y, 60, 60);
       }
 
-      // رسم العقبات
       for (let obstacle of obstacles) {
         if (rockImg) image(rockImg, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
       }
 
-      // التحقق من الاصطدام بالعقبات
       for (let obstacle of obstacles) {
         if (rockImg && dist(player.x + 25, player.y + 25, obstacle.x + obstacle.w / 2, obstacle.y + obstacle.h / 2) < 35) {
           score = max(0, score - 1);
@@ -139,7 +146,6 @@ function draw() {
         }
       }
 
-      // عرض المعلومات
       fill(255, 230, 200);
       stroke(255, 165, 0);
       strokeWeight(4);
@@ -151,7 +157,6 @@ function draw() {
       text(`الشخصية: ${selectedCharacter === "zaza" ? "ظاظا" : "جرجير"}`, 20, 70);
       text(`المستوى: ${level}`, 20, 100);
 
-      // رسالة التعليمات
       fill(255, 230, 200);
       stroke(255, 165, 0);
       strokeWeight(4);
@@ -206,7 +211,6 @@ function draw() {
       textSize(30);
       text("مبروك! لقد وجدت الكنز!", 250, 350);
 
-      // النجوم المتساقطة
       for (let i = fallingStars.length - 1; i >= 0; i--) {
         let star = fallingStars[i];
         star.y += star.speed;
@@ -283,6 +287,10 @@ function stopPlayer() {
 }
 
 function startGame(character) {
+  if (!resourcesLoaded) {
+    alert("لا يمكن بدء اللعبة. هناك مشكلة في تحميل الموارد. تأكد من رفع الصور إلى المستودع.");
+    return;
+  }
   selectedCharacter = character;
   gameState = "playing";
 }

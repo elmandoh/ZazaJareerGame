@@ -1,6 +1,7 @@
 let player;
 let stars = [];
 let treasure;
+let obstacles = [];
 let questions = [
   { question: "ما هو 5 + 3؟", answers: ["6", "7", "8", "9"], correct: "8" },
   { question: "ما هو لون السماء؟", answers: ["أحمر", "أزرق", "أخضر", "أصفر"], correct: "أزرق" },
@@ -18,28 +19,43 @@ let score = 0;
 let level = 1;
 let gameState = "welcome";
 let selectedCharacter = "zaza";
-let zazaImg, jareerImg, starImg, treasureImg, collectSound, winSound;
+let zazaImg, jareerImg, starImg, treasureImg, rockImg, collectSound, winSound;
+let targetX, targetY;
+let moveDirection = { x: 0, y: 0 };
+let starBlink = 0;
+let treasureShake = 0;
+let fallingStars = [];
+let collisionFlash = 0;
 
 function preload() {
   zazaImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png');
   jareerImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png');
   treasureImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png');
-  starImg = loadImage('https://placehold.co/30x30.png'); // استبدل برابط صورة نجمة
-  collectSound = loadSound('https://freesound.org/data/previews/387/387232_5121236-lq.mp3'); // صوت جمع نجمة
-  winSound = loadSound('https://freesound.org/data/previews/503/503744_5121236-lq.mp3'); // صوت الفوز
+  starImg = loadImage('https://cdn.pixabay.com/photo/2017/01/31/14/40/gold-2025645_1280.png');
+  rockImg = loadImage('https://cdn.pixabay.com/photo/2013/07/12/19/46/rock-156159_1280.png'); // صورة صخرة مؤقتة
+  collectSound = loadSound('https://freesound.org/data/previews/387/387232_5121236-lq.mp3');
+  winSound = loadSound('https://freesound.org/data/previews/503/503744_5121236-lq.mp3');
 }
 
 function setup() {
   let canvas = createCanvas(800, 600);
   canvas.parent('game-container');
+  canvas.style('width', '100%');
+  canvas.style('height', '100%');
   resetLevel();
+  targetX = 50;
+  targetY = 500;
 }
 
 function resetLevel() {
   player = { x: 50, y: 500, img: selectedCharacter === "zaza" ? zazaImg : jareerImg };
   stars = [];
+  obstacles = [];
   for (let i = 0; i < 5; i++) {
     stars.push({ x: 150 + i * 150, y: 400 - i * 50, collected: false });
+  }
+  for (let i = 0; i < 4; i++) {
+    obstacles.push({ x: random(100, 700), y: random(200, 500), w: 40, h: 40 });
   }
   treasure = { x: 700, y: 100, collected: false };
   currentQuestion = 0;
@@ -48,25 +64,96 @@ function resetLevel() {
 
 function draw() {
   background(0, 0, 0, 0);
+
   if (gameState === "welcome") {
     document.getElementById('welcome-screen').style.display = 'flex';
+    document.getElementById('controls').style.display = 'none';
   } else {
     document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('controls').style.display = 'flex';
     if (gameState === "playing") {
+      // تأثير وميض الاصطدام
+      if (collisionFlash > 0) {
+        fill(255, 0, 0, collisionFlash);
+        rect(0, 0, width, height);
+        collisionFlash -= 10;
+      }
+
+      // تحريك الشخصية
+      let dx = targetX - player.x + moveDirection.x * 10;
+      let dy = targetY - player.y + moveDirection.y * 10;
+      let distance = dist(player.x, player.y, targetX, targetY);
+      if (distance > 5 || moveDirection.x !== 0 || moveDirection.y !== 0) {
+        player.x += dx * 0.1 + moveDirection.x * 5;
+        player.y += dy * 0.1 + moveDirection.y * 5;
+      }
+      player.x = constrain(player.x, 0, width - 50);
+      player.y = constrain(player.y, 0, height - 50);
+
       image(player.img, player.x, player.y, 50, 50);
+
+      // وميض النجوم
+      starBlink = (starBlink + 0.1) % TWO_PI;
+      let starScale = 1 + sin(starBlink) * 0.1;
       for (let star of stars) {
         if (!star.collected) {
-          image(starImg, star.x, star.y, 30, 30);
+          push();
+          translate(star.x + 15, star.y + 15);
+          scale(starScale);
+          image(starImg, -15, -15, 30, 30);
+          pop();
         }
       }
+
+      // اهتزاز الكنز
       if (!treasure.collected) {
-        image(treasureImg, treasure.x, treasure.y, 60, 60);
+        let distanceToTreasure = dist(player.x, player.y, treasure.x, treasure.y);
+        if (distanceToTreasure < 150) {
+          treasureShake = sin(frameCount * 0.2) * 5;
+        } else {
+          treasureShake = 0;
+        }
+        image(treasureImg, treasure.x + treasureShake, treasure.y, 60, 60);
       }
-      fill(255);
+
+      // رسم العقبات
+      for (let obstacle of obstacles) {
+        image(rockImg, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+      }
+
+      // التحقق من الاصطدام بالعقبات
+      for (let obstacle of obstacles) {
+        if (dist(player.x + 25, player.y + 25, obstacle.x + obstacle.w / 2, obstacle.y + obstacle.h / 2) < 35) {
+          score = max(0, score - 1);
+          player.x = 50;
+          player.y = 500;
+          collisionFlash = 100;
+          break;
+        }
+      }
+
+      // عرض المعلومات
+      fill(255, 230, 200);
+      stroke(255, 165, 0);
+      strokeWeight(4);
+      rect(10, 10, 200, 90, 10);
+      fill(0);
+      strokeWeight(0);
       textSize(20);
-      text(`النقاط: ${score}`, 20, 30);
-      text(`الشخصية: ${selectedCharacter === "zaza" ? "ظاظا" : "جرجير"}`, 20, 60);
-      text(`المستوى: ${level}`, 20, 90);
+      text(`النقاط: ${score}`, 20, 40);
+      text(`الشخصية: ${selectedCharacter === "zaza" ? "ظاظا" : "جرجير"}`, 20, 70);
+      text(`المستوى: ${level}`, 20, 100);
+
+      // رسالة التعليمات
+      fill(255, 230, 200);
+      stroke(255, 165, 0);
+      strokeWeight(4);
+      rect(width - 310, 10, 300, 40, 10);
+      fill(0);
+      strokeWeight(0);
+      textSize(20);
+      text(currentQuestion < stars.length ? "تحرك نحو النجمة التالية!" : "افتح الكنز!", width - 300, 40);
+
       if (dist(player.x, player.y, stars[currentQuestion].x, stars[currentQuestion].y) < 40 && !stars[currentQuestion].collected) {
         gameState = "question";
       }
@@ -80,41 +167,74 @@ function draw() {
           resetLevel();
         } else {
           gameState = "win";
+          for (let i = 0; i < 20; i++) {
+            fallingStars.push({ x: random(width), y: -20, speed: random(2, 5) });
+          }
         }
       }
     } else if (gameState === "question") {
-      fill(255, 200);
-      rect(200, 150, 400, 300);
+      fill(255, 230, 200);
+      stroke(255, 165, 0);
+      strokeWeight(4);
+      rect(200, 150, 400, 300, 20);
       fill(0);
-      textSize(20);
-      text(questions[currentQuestion].question, 250, 200);
+      strokeWeight(0);
+      textSize(30);
+      text(questions[currentQuestion].question, 250, 220);
+      textSize(24);
       for (let i = 0; i < 4; i++) {
-        text(questions[currentQuestion].answers[i], 250, 250 + i * 30);
+        fill(questions[currentQuestion].answers[i] === questions[currentQuestion].correct && mouseX > 250 && mouseX < 550 && mouseY > 250 + i * 40 && mouseY < 290 + i * 40 ? 'rgba(255, 215, 0, 0.5)' : 255);
+        rect(250, 250 + i * 40, 300, 40, 10);
+        fill(0);
+        text(questions[currentQuestion].answers[i], 300, 280 + i * 40);
       }
     } else if (gameState === "win") {
       image(treasureImg, 350, 200, 100, 100);
-      fill(255, 200);
-      rect(200, 300, 400, 100);
+      fill(255, 230, 200);
+      stroke(255, 165, 0);
+      strokeWeight(4);
+      rect(200, 300, 400, 100, 20);
       fill(0);
+      strokeWeight(0);
       textSize(30);
       text("مبروك! لقد وجدت الكنز!", 250, 350);
+
+      // النجوم المتساقطة
+      for (let i = fallingStars.length - 1; i >= 0; i--) {
+        let star = fallingStars[i];
+        star.y += star.speed;
+        image(starImg, star.x, star.y, 20, 20);
+        if (star.y > height) {
+          fallingStars.splice(i, 1);
+        }
+      }
     }
   }
 }
 
 function keyPressed() {
   if (gameState === "playing") {
-    if (keyCode === RIGHT_ARROW) player.x = constrain(player.x + 10, 0, width - 50);
-    if (keyCode === LEFT_ARROW) player.x = constrain(player.x - 10, 0, width - 50);
-    if (keyCode === UP_ARROW) player.y = constrain(player.y - 10, 0, height - 50);
-    if (keyCode === DOWN_ARROW) player.y = constrain(player.y + 10, 0, height - 50);
+    if (keyCode === RIGHT_ARROW) moveDirection.x = 1;
+    if (keyCode === LEFT_ARROW) moveDirection.x = -1;
+    if (keyCode === UP_ARROW) moveDirection.y = -1;
+    if (keyCode === DOWN_ARROW) moveDirection.y = 1;
+  }
+}
+
+function keyReleased() {
+  if (gameState === "playing") {
+    if (keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) moveDirection.x = 0;
+    if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) moveDirection.y = 0;
   }
 }
 
 function mousePressed() {
-  if (gameState === "question") {
+  if (gameState === "playing") {
+    targetX = mouseX;
+    targetY = mouseY;
+  } else if (gameState === "question") {
     for (let i = 0; i < 4; i++) {
-      if (mouseX > 250 && mouseX < 550 && mouseY > 250 + i * 30 && mouseY < 270 + i * 30) {
+      if (mouseX > 250 && mouseX < 550 && mouseY > 250 + i * 40 && mouseY < 290 + i * 40) {
         if (questions[currentQuestion].answers[i] === questions[currentQuestion].correct) {
           score++;
           stars[currentQuestion].collected = true;
@@ -131,6 +251,28 @@ function mousePressed() {
       }
     }
   }
+}
+
+function touchMoved() {
+  if (gameState === "playing") {
+    targetX = mouseX;
+    targetY = mouseY;
+    return false;
+  }
+}
+
+function movePlayer(direction) {
+  if (gameState === "playing") {
+    if (direction === 'up') moveDirection.y = -1;
+    if (direction === 'down') moveDirection.y = 1;
+    if (direction === 'left') moveDirection.x = -1;
+    if (direction === 'right') moveDirection.x = 1;
+  }
+}
+
+function stopPlayer() {
+  moveDirection.x = 0;
+  moveDirection.y = 0;
 }
 
 function startGame(character) {

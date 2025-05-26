@@ -28,30 +28,49 @@ let fallingStars = [];
 let collisionFlash = 0;
 let resourcesLoaded = false;
 let errorMessage = "";
+let totalResources = 7; // عدد الموارد (5 صور + 2 أصوات)
+let loadedResources = 0;
 
 function preload() {
+  // تحميل الصور
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png', (img) => zazaImg = img);
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png', (img) => jareerImg = img);
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png', (img) => treasureImg = img);
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png', (img) => starImg = img);
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png', (img) => rockImg = img);
+  loadResource(loadSound, 'https://freesound.org/data/previews/387/387232_5121236-lq.mp3', (sound) => collectSound = sound);
+  loadResource(loadSound, 'https://freesound.org/data/previews/503/503744_5121236-lq.mp3', (sound) => winSound = sound);
+}
+
+function loadResource(loadFunction, url, callback) {
   try {
-    zazaImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png');
-    jareerImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png');
-    treasureImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png');
-    starImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png');
-    rockImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png');
-    collectSound = loadSound('https://freesound.org/data/previews/387/387232_5121236-lq.mp3');
-    winSound = loadSound('https://freesound.org/data/previews/503/503744_5121236-lq.mp3');
+    let resource = loadFunction(url, () => {
+      loadedResources++;
+      updateLoadingBar();
+      callback(resource);
+    }, (err) => {
+      console.error(`فشل تحميل المورد: ${url}`, err);
+      loadedResources++;
+      updateLoadingBar();
+    });
   } catch (error) {
-    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع جميع الصور إلى المستودع.";
-    console.error("خطأ في تحميل الموارد:", error);
+    console.error(`خطأ في تحميل المورد: ${url}`, error);
+    loadedResources++;
+    updateLoadingBar();
   }
 }
 
-function setup() {
-  let canvas = createCanvas(800, 600);
-  canvas.parent('game-container');
-  canvas.style('width', '100%');
-  canvas.style('height', '100%');
-  
-  if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg || !collectSound || !winSound) {
-    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع جميع الصور إلى المستودع.";
+function updateLoadingBar() {
+  let progress = (loadedResources / totalResources) * 100;
+  document.getElementById('loading-progress').style.width = `${progress}%`;
+  if (loadedResources === totalResources) {
+    checkResources();
+  }
+}
+
+function checkResources() {
+  if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg) {
+    errorMessage = "فشل تحميل بعض الصور الأساسية. تأكد من رفع جميع الصور إلى المستودع.";
     console.error("الموارد المفقودة:", {
       zazaImg: !!zazaImg,
       jareerImg: !!jareerImg,
@@ -63,8 +82,16 @@ function setup() {
     });
   } else {
     resourcesLoaded = true;
+    document.getElementById('loading-text').innerText = "تم التحميل! اختر شخصيتك لبدء اللعبة.";
   }
+}
 
+function setup() {
+  let canvas = createCanvas(800, 600);
+  canvas.parent('game-container');
+  canvas.style('width', '100%');
+  canvas.style('height', '100%');
+  
   if (resourcesLoaded) {
     resetLevel();
   }
@@ -179,7 +206,7 @@ function draw() {
       }
       if (dist(player.x, player.y, treasure.x, treasure.y) < 50 && score >= 5 && !treasure.collected) {
         treasure.collected = true;
-        winSound.play();
+        if (winSound) winSound.play();
         if (level === 1) {
           level = 2;
           questions = level2Questions;
@@ -257,7 +284,7 @@ function mousePressed() {
         if (questions[currentQuestion].answers[i] === questions[currentQuestion].correct) {
           score++;
           stars[currentQuestion].collected = true;
-          collectSound.play();
+          if (collectSound) collectSound.play();
           currentQuestion++;
           if (currentQuestion >= stars.length) {
             gameState = "playing";
@@ -296,7 +323,7 @@ function stopPlayer() {
 
 function startGame(character) {
   if (!resourcesLoaded) {
-    alert("لا يمكن بدء اللعبة. هناك مشكلة في تحميل الموارد. تأكد من رفع الصور إلى المستودع.");
+    alert("لا يمكن بدء اللعبة. هناك مشكلة في تحميل الصور الأساسية. تأكد من رفع الصور إلى المستودع.");
     return;
   }
   selectedCharacter = character;

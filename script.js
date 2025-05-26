@@ -3,16 +3,42 @@ let stars = [];
 let treasure;
 let obstacles = [];
 let questions = [
-  { question: "ما هو 5 + 3؟", answers: ["6", "7", "8", "9"], correct: "8" },
-  { question: "ما هو لون السماء؟", answers: ["أحمر", "أزرق", "أخضر", "أصفر"], correct: "أزرق" },
+  { question: "ما هو 3 + 4؟", answers: ["5", "6", "7", "8"], correct: "7" },
+  { question: "ما لون الفراولة؟", answers: ["أحمر", "أزرق", "أخضر", "أصفر"], correct: "أحمر" },
   { question: "ما اسم صديق ظاظا المقرب؟", answers: ["جرجير", "سمسم", "بطوط", "ميمي"], correct: "جرجير" },
-  { question: "كم عدد أرجل العنكبوت؟", answers: ["4", "6", "8", "10"], correct: "8" },
+  { question: "كم عدد أصابع اليد الواحدة؟", answers: ["3", "4", "5", "6"], correct: "5" },
   { question: "ما الذي يحب ظاظا أكله؟", answers: ["بيتزا", "كعك", "فواكه", "كل شيء"], correct: "فواكه" },
+  { question: "ما هو الحيوان الذي يقول 'مواء'؟", answers: ["كلب", "قط", "بقرة", "خروف"], correct: "قط" },
+  { question: "ما عدد أيام الأسبوع؟", answers: ["5", "6", "7", "8"], correct: "7" },
 ];
 let level2Questions = [
-  { question: "ما هو 10 - 4؟", answers: ["4", "5", "6", "7"], correct: "6" },
-  { question: "ما هو الحيوان الذي يعيش في البحر؟", answers: ["أسد", "سمكة", "قط", "كلب"], correct: "سمكة" },
+  { question: "ما هو 8 - 3؟", answers: ["4", "5", "6", "7"], correct: "5" },
+  { question: "ما الحيوان الذي يعيش في البحر؟", answers: ["أسد", "سمكة", "قط", "كلب"], correct: "سمكة" },
   { question: "ما الذي يساعد ظاظا في مغامراته؟", answers: ["كتاب", "سيارة", "خريطة", "قلم"], correct: "خريطة" },
+  { question: "ما لون الموز؟", answers: ["أحمر", "أصفر", "أخضر", "أزرق"], correct: "أصفر" },
+  { question: "ما هو 6 × 2؟", answers: ["10", "12", "14", "16"], correct: "12" },
+  { question: "ما الذي نراه في السماء ليلاً؟", answers: ["شمس", "قمر", "غيوم", "مطر"], correct: "قمر" },
+  { question: "ما اسم أول يوم في الأسبوع؟", answers: ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء"], correct: "الأحد" },
+];
+let level3Questions = [
+  { question: "ما هو 15 × 2؟", answers: ["25", "30", "35", "40"], correct: "30" },
+  { question: "ما عاصمة مصر؟", answers: ["القاهرة", "الرياض", "الجزائر", "تونس"], correct: "القاهرة" },
+  { question: "ما الذي يطير في السماء؟", answers: ["سمكة", "طائر", "قطة", "أرنب"], correct: "طائر" },
+  { question: "ما هو 20 - 8؟", answers: ["10", "11", "12", "13"], correct: "12" },
+  { question: "ما أطول نهر في العالم؟", answers: ["النيل", "الأمازون", "الدانوب", "الفرات"], correct: "النيل" },
+  { question: "ما الحيوان الذي يعيش في الصحراء؟", answers: ["دب", "جمل", "فيل", "قرد"], correct: "جمل" },
+  { question: "ما لون الياقوت؟", answers: ["أحمر", "أخضر", "أصفر", "أزرق"], correct: "أحمر" },
+];
+let level4Questions = [
+  { question: "ما هو 20 ÷ 5؟", answers: ["2", "4", "6", "8"], correct: "4" },
+  { question: "ما أكبر قارة في العالم؟", answers: ["أفريقيا", "أوروبا", "آسيا", "أستراليا"], correct: "آسيا" },
+  { question: "ما لون الشمس؟", answers: ["أحمر", "أصفر", "أخضر", "أزرق"], correct: "أصفر" },
+  { question: "ما عدد الكواكب في المجموعة الشمسية؟", answers: ["7", "8", "9", "10"], correct: "8" },
+  { question: "ما عاصمة فرنسا؟", answers: ["برلين", "باريس", "مدريد", "روما"], correct: "باريس" },
+  { question: "ما هو 12 × 3؟", answers: ["30", "36", "42", "48"], correct: "36" },
+  { question: "ما الحيوان الأسرع في العالم؟", answers: ["أرنب", "فهد", "حصان", "كلب"], correct: "فهد" },
+  { question: "ما أعلى جبل في العالم؟", answers: ["إفرست", "كليمنجارو", "الألب", "الهيمالايا"], correct: "إفرست" },
+  { question: "ما عدد أشهر السنة؟", answers: ["10", "11", "12", "13"], correct: "12" },
 ];
 let currentQuestion = 0;
 let score = 0;
@@ -32,7 +58,6 @@ let totalResources = 5; // 5 صور فقط
 let loadedResources = 0;
 
 function preload() {
-  // تحميل الصور مع معالجة أخطاء صريحة
   loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png', (img) => {
     zazaImg = img;
     console.log("تم تحميل zaza.png بنجاح");
@@ -128,10 +153,12 @@ function resetLevel() {
   if (!player) player = { x: 50, y: 500, img: selectedCharacter === "zaza" ? zazaImg : jareerImg };
   stars = [];
   obstacles = [];
-  for (let i = 0; i < 5; i++) {
-    stars.push({ x: 150 + i * 150, y: 400 - i * 50, collected: false });
+  let starCount = level === 1 ? 7 : level === 2 ? 7 : level === 3 ? 7 : 9; // عدد النجوم حسب المستوى
+  let obstacleCount = level === 1 ? 4 : level === 2 ? 5 : level === 3 ? 6 : 7; // عدد العوائق حسب المستوى
+  for (let i = 0; i < starCount; i++) {
+    stars.push({ x: 100 + i * 100, y: 400 - i * 40, collected: false });
   }
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < obstacleCount; i++) {
     obstacles.push({ x: random(100, 700), y: random(200, 500), w: 40, h: 40 });
   }
   treasure = { x: 700, y: 100, collected: false };
@@ -174,7 +201,7 @@ function draw() {
         image(player.img, player.x, player.y, 50, 50);
       } else {
         console.warn("لم يتم عرض صورة اللاعب لأن player.img غير موجود");
-        fill(255, 0, 0); // عرض مربع أحمر بديل
+        fill(255, 0, 0);
         rect(player.x, player.y, 50, 50);
       }
 
@@ -190,7 +217,7 @@ function draw() {
             pop();
           } else {
             console.warn("لم يتم عرض النجمة لأن starImg غير موجود");
-            fill(255, 255, 0); // عرض مربع أصفر بديل
+            fill(255, 255, 0);
             rect(star.x, star.y, 30, 30);
           }
         }
@@ -207,7 +234,7 @@ function draw() {
           image(treasureImg, treasure.x + treasureShake, treasure.y, 60, 60);
         } else {
           console.warn("لم يتم عرض الكنز لأن treasureImg غير موجود");
-          fill(255, 215, 0); // عرض مربع ذهبي بديل
+          fill(255, 215, 0);
           rect(treasure.x, treasure.y, 60, 60);
         }
       }
@@ -217,7 +244,7 @@ function draw() {
           image(rockImg, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
         } else {
           console.warn("لم يتم عرض العقبة لأن rockImg غير موجود");
-          fill(150, 150, 150); // عرض مربع رمادي بديل
+          fill(150, 150, 150);
           rect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
         }
       }
@@ -252,14 +279,24 @@ function draw() {
       textSize(20);
       text(currentQuestion < stars.length ? "تحرك نحو النجمة التالية!" : "افتح الكنز!", width - 300, 40);
 
-      if (dist(player.x, player.y, stars[currentQuestion].x, stars[currentQuestion].y) < 40 && !stars[currentQuestion].collected) {
+      if (currentQuestion < stars.length && dist(player.x, player.y, stars[currentQuestion].x, stars[currentQuestion].y) < 40 && !stars[currentQuestion].collected) {
         gameState = "question";
       }
-      if (dist(player.x, player.y, treasure.x, treasure.y) < 50 && score >= 5 && !treasure.collected) {
+      if (dist(player.x, player.y, treasure.x, treasure.y) < 50 && score >= stars.length && !treasure.collected) {
         treasure.collected = true;
         if (level === 1) {
           level = 2;
           questions = level2Questions;
+          score = 0;
+          resetLevel();
+        } else if (level === 2) {
+          level = 3;
+          questions = level3Questions;
+          score = 0;
+          resetLevel();
+        } else if (level === 3) {
+          level = 4;
+          questions = level4Questions;
           score = 0;
           resetLevel();
         } else {

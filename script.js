@@ -32,42 +32,57 @@ let totalResources = 5; // 5 صور فقط
 let loadedResources = 0;
 
 function preload() {
-  // تحميل الصور مع تسجيل مفصل للأخطاء
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png', (img) => {
+  // تحميل الصور مع معالجة أخطاء صريحة
+  loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png', (img) => {
     zazaImg = img;
     console.log("تم تحميل zaza.png بنجاح");
-  }, (err) => console.error("فشل تحميل zaza.png:", err));
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png', (img) => {
-    jareerImg = img;
-    console.log("تم تحميل jareer.png بنجاح");
-  }, (err) => console.error("فشل تحميل jareer.png:", err));
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png', (img) => {
-    treasureImg = img;
-    console.log("تم تحميل box.png بنجاح");
-  }, (err) => console.error("فشل تحميل box.png:", err));
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png', (img) => {
-    starImg = img;
-    console.log("تم تحميل star.png بنجاح");
-  }, (err) => console.error("فشل تحميل star.png:", err));
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png', (img) => {
-    rockImg = img;
-    console.log("تم تحميل rock.png بنجاح");
-  }, (err) => console.error("فشل تحميل rock.png:", err));
-}
-
-function loadResource(loadFunction, url, successCallback, errorCallback) {
-  try {
-    loadFunction(url, successCallback, (err) => {
-      if (errorCallback) errorCallback(err);
-      loadedResources++;
-      updateLoadingBar();
-    });
-  } catch (error) {
-    console.error(`خطأ أثناء تحميل المورد: ${url}`, error);
-    if (errorCallback) errorCallback(error);
     loadedResources++;
     updateLoadingBar();
-  }
+  }, (err) => {
+    console.error("فشل تحميل zaza.png:", err);
+    loadedResources++;
+    updateLoadingBar();
+  });
+  loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png', (img) => {
+    jareerImg = img;
+    console.log("تم تحميل jareer.png بنجاح");
+    loadedResources++;
+    updateLoadingBar();
+  }, (err) => {
+    console.error("فشل تحميل jareer.png:", err);
+    loadedResources++;
+    updateLoadingBar();
+  });
+  loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png', (img) => {
+    treasureImg = img;
+    console.log("تم تحميل box.png بنجاح");
+    loadedResources++;
+    updateLoadingBar();
+  }, (err) => {
+    console.error("فشل تحميل box.png:", err);
+    loadedResources++;
+    updateLoadingBar();
+  });
+  loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png', (img) => {
+    starImg = img;
+    console.log("تم تحميل star.png بنجاح");
+    loadedResources++;
+    updateLoadingBar();
+  }, (err) => {
+    console.error("فشل تحميل star.png:", err);
+    loadedResources++;
+    updateLoadingBar();
+  });
+  loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png', (img) => {
+    rockImg = img;
+    console.log("تم تحميل rock.png بنجاح");
+    loadedResources++;
+    updateLoadingBar();
+  }, (err) => {
+    console.error("فشل تحميل rock.png:", err);
+    loadedResources++;
+    updateLoadingBar();
+  });
 }
 
 function updateLoadingBar() {

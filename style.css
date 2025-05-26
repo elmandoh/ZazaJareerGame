@@ -1,0 +1,20 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f8ff;
+  font-family: Arial, sans-serif;
+  direction: rtl;
+}
+
+#game-container {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  border: 2px solid #333;
+  background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e'); /* خلفية الجزيرة */
+  background-size: cover;
+}

@@ -1,135 +1,128 @@
+:root {
+  writing-mode: horizontal-tb;
+  direction: rtl;
+  text-orientation: mixed;
+}
+
 body {
   margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f0f8ff;
   font-family: Arial, sans-serif;
-  direction: rtl;
-  overflow: hidden;
+  background-image: url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_1280.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  color: white;
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 #game-container {
-  position: relative;
-  width: 100%;
-  max-width: 800px;
-  height: 80vh;
-  max-height: 600px;
-  border: 2px solid #333;
-  background-image: url('https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg');
-  background-size: cover;
-  background-position: center;
+  width: 800px;
+  height: 600px;
+  border: 5px solid #ffaa00;
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 #welcome-screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  width: 600px;
+  height: 400px;
+  border-radius: 20px;
+  color: white;
 }
 
 #welcome-screen h1 {
-  font-size: 2.5em;
+  font-size: 40px;
   margin-bottom: 20px;
 }
 
-#welcome-screen p {
-  font-size: 1.2em;
-  margin-bottom: 30px;
-}
-
 #welcome-screen button {
- 种植: 10px 20px;
-  font-size: 1.1em;
+  padding: 10px 20px;
   margin: 10px;
-  cursor: pointer;
-  background-color: #ffcc00;
+  font-size: 20px;
+  background-color: #ffaa00;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
+  cursor: pointer;
   transition: background-color 0.3s;
 }
 
 #welcome-screen button:hover {
-  background-color: #e6b800;
-}
-
-#loading-text, #error-text {
-  font-size: 1em;
-  margin-top: 10px;
+  background-color: #ffcc33;
 }
 
 #loading-bar {
-  width: 200px;
+  width: 300px;
   height: 20px;
-  background-color: #ddd;
+  background-color: #333;
   border-radius: 10px;
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 #loading-progress {
   width: 0%;
   height: 100%;
-  background-color: #ffcc00;
-  transition: width 0.3s ease;
+  background-color: #ffaa00;
+  transition: width 0.5s;
+}
+
+#loading-text, #error-text {
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+#error-text {
+  color: #ff5555;
+  display: none;
 }
 
 #controls {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
   display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  margin-top: 20px;
 }
 
 #controls button {
-  width: 50px;
-  height: 50px;
-  font-size: 1.5em;
-  background-color: #ffcc00;
+  padding: 10px;
+  margin: 5px;
+  font-size: 16px;
+  background-color: #ffaa00;
   border: none;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-#controls button:active {
-  background-color: #e6b800;
+#controls button:hover {
+  background-color: #ffcc33;
 }
 
 @media (max-width: 600px) {
-  #welcome-screen h1 {
-    font-size: 1.8em;
+  #game-container {
+    width: 100%;
+    height: 400px;
   }
 
-  #welcome-screen p {
-    font-size: 1em;
+  #welcome-screen {
+    width: 90%;
+    height: 300px;
+  }
+
+  #welcome-screen h1 {
+    font-size: 30px;
   }
 
   #welcome-screen button {
-    font-size: 0.9em;
+    font-size: 16px;
     padding: 8px 16px;
-  }
-
-  #controls {
-    display: flex;
-  }
-
-  #controls button {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2em;
   }
 }

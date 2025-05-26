@@ -19,7 +19,7 @@ let score = 0;
 let level = 1;
 let gameState = "welcome";
 let selectedCharacter = "zaza";
-let zazaImg, jareerImg, starImg, treasureImg, rockImg, collectSound, winSound;
+let zazaImg, jareerImg, starImg, treasureImg, rockImg;
 let targetX, targetY;
 let moveDirection = { x: 0, y: 0 };
 let starBlink = 0;
@@ -28,7 +28,7 @@ let fallingStars = [];
 let collisionFlash = 0;
 let resourcesLoaded = false;
 let errorMessage = "";
-let totalResources = 5; // تعديل عدد الموارد إلى 5 صور فقط
+let totalResources = 5; // 5 صور فقط
 let loadedResources = 0;
 
 function preload() {
@@ -53,15 +53,6 @@ function preload() {
     rockImg = img;
     console.log("تم تحميل rock.png بنجاح");
   });
-  // تعليق تحميل الأصوات مؤقتًا
-  // loadResource(loadSound, 'https://freesound.org/data/previews/387/387232_5121236-lq.mp3', (sound) => {
-  //   collectSound = sound;
-  //   console.log("تم تحميل collectSound بنجاح");
-  // });
-  // loadResource(loadSound, 'https://freesound.org/data/previews/503/503744_5121236-lq.mp3', (sound) => {
-  //   winSound = sound;
-  //   console.log("تم تحميل winSound بنجاح");
-  // });
 }
 
 function loadResource(loadFunction, url, callback) {
@@ -98,9 +89,7 @@ function checkResources() {
       jareerImg: !!jareerImg,
       treasureImg: !!treasureImg,
       starImg: !!starImg,
-      rockImg: !!rockImg,
-      collectSound: !!collectSound,
-      winSound: !!winSound
+      rockImg: !!rockImg
     });
   } else {
     resourcesLoaded = true;
@@ -252,7 +241,6 @@ function draw() {
       }
       if (dist(player.x, player.y, treasure.x, treasure.y) < 50 && score >= 5 && !treasure.collected) {
         treasure.collected = true;
-        if (winSound) winSound.play();
         if (level === 1) {
           level = 2;
           questions = level2Questions;
@@ -342,7 +330,6 @@ function mousePressed() {
         if (questions[currentQuestion].answers[i] === questions[currentQuestion].correct) {
           score++;
           stars[currentQuestion].collected = true;
-          if (collectSound) collectSound.play();
           currentQuestion++;
           if (currentQuestion >= stars.length) {
             gameState = "playing";

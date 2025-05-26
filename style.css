@@ -63,6 +63,11 @@ body {
   background-color: #e6b800;
 }
 
+#loading-text, #error-text {
+  font-size: 1em;
+  margin-top: 10px;
+}
+
 #controls {
   position: absolute;
   bottom: 20px;

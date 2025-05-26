@@ -15,6 +15,14 @@
       <button onclick="startGame('zaza')">العب بظاظا</button>
       <button onclick="startGame('jareer')">العب بجرجير</button>
     </div>
+    <div id="controls">
+      <button id="up-btn" ontouchstart="movePlayer('up')" ontouchend="stopPlayer()">↑</button>
+      <div>
+        <button id="left-btn" ontouchstart="movePlayer('left')" ontouchend="stopPlayer()">←</button>
+        <button id="right-btn" ontouchstart="movePlayer('right')" ontouchend="stopPlayer()">→</button>
+      </div>
+      <button id="down-btn" ontouchstart="movePlayer('down')" ontouchend="stopPlayer()">↓</button>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>

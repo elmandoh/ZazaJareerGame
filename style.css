@@ -49,7 +49,7 @@ body {
 }
 
 #welcome-screen button {
-  padding: 10px 20px;
+ 种植: 10px 20px;
   font-size: 1.1em;
   margin: 10px;
   cursor: pointer;
@@ -66,6 +66,22 @@ body {
 #loading-text, #error-text {
   font-size: 1em;
   margin-top: 10px;
+}
+
+#loading-bar {
+  width: 200px;
+  height: 20px;
+  background-color: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+#loading-progress {
+  width: 0%;
+  height: 100%;
+  background-color: #ffcc00;
+  transition: width 0.3s ease;
 }
 
 #controls {

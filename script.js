@@ -28,13 +28,17 @@ let fallingStars = [];
 let collisionFlash = 0;
 
 function preload() {
-  zazaImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png');
-  jareerImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png');
-  treasureImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png');
-  starImg = loadImage('https://cdn.pixabay.com/photo/2017/01/31/14/40/gold-2025645_1280.png');
-  rockImg = loadImage('https://cdn.pixabay.com/photo/2013/07/12/19/46/rock-156159_1280.png'); // صورة صخرة مؤقتة
-  collectSound = loadSound('https://freesound.org/data/previews/387/387232_5121236-lq.mp3');
-  winSound = loadSound('https://freesound.org/data/previews/503/503744_5121236-lq.mp3');
+  try {
+    zazaImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png');
+    jareerImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png');
+    treasureImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png');
+    starImg = loadImage('https://cdn.pixabay.com/photo/2017/01/31/14/40/gold-2025645_1280.png');
+    rockImg = loadImage('https://cdn.pixabay.com/photo/2013/07/12/19/46/rock-156159_1280.png');
+    collectSound = loadSound('https://freesound.org/data/previews/387/387232_5121236-lq.mp3');
+    winSound = loadSound('https://freesound.org/data/previews/503/503744_5121236-lq.mp3');
+  } catch (error) {
+    console.error("خطأ في تحميل الموارد:", error);
+  }
 }
 
 function setup() {
@@ -42,13 +46,16 @@ function setup() {
   canvas.parent('game-container');
   canvas.style('width', '100%');
   canvas.style('height', '100%');
+  if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg) {
+    console.error("فشل تحميل صورة واحدة على الأقل، تحقق من الروابط!");
+  }
   resetLevel();
   targetX = 50;
   targetY = 500;
 }
 
 function resetLevel() {
-  player = { x: 50, y: 500, img: selectedCharacter === "zaza" ? zazaImg : jareerImg };
+  if (!player) player = { x: 50, y: 500, img: selectedCharacter === "zaza" ? zazaImg : jareerImg };
   stars = [];
   obstacles = [];
   for (let i = 0; i < 5; i++) {
@@ -90,13 +97,13 @@ function draw() {
       player.x = constrain(player.x, 0, width - 50);
       player.y = constrain(player.y, 0, height - 50);
 
-      image(player.img, player.x, player.y, 50, 50);
+      if (player.img) image(player.img, player.x, player.y, 50, 50);
 
       // وميض النجوم
       starBlink = (starBlink + 0.1) % TWO_PI;
       let starScale = 1 + sin(starBlink) * 0.1;
       for (let star of stars) {
-        if (!star.collected) {
+        if (!star.collected && starImg) {
           push();
           translate(star.x + 15, star.y + 15);
           scale(starScale);
@@ -106,7 +113,7 @@ function draw() {
       }
 
       // اهتزاز الكنز
-      if (!treasure.collected) {
+      if (!treasure.collected && treasureImg) {
         let distanceToTreasure = dist(player.x, player.y, treasure.x, treasure.y);
         if (distanceToTreasure < 150) {
           treasureShake = sin(frameCount * 0.2) * 5;
@@ -118,12 +125,12 @@ function draw() {
 
       // رسم العقبات
       for (let obstacle of obstacles) {
-        image(rockImg, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+        if (rockImg) image(rockImg, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
       }
 
       // التحقق من الاصطدام بالعقبات
       for (let obstacle of obstacles) {
-        if (dist(player.x + 25, player.y + 25, obstacle.x + obstacle.w / 2, obstacle.y + obstacle.h / 2) < 35) {
+        if (rockImg && dist(player.x + 25, player.y + 25, obstacle.x + obstacle.w / 2, obstacle.y + obstacle.h / 2) < 35) {
           score = max(0, score - 1);
           player.x = 50;
           player.y = 500;
@@ -189,7 +196,7 @@ function draw() {
         text(questions[currentQuestion].answers[i], 300, 280 + i * 40);
       }
     } else if (gameState === "win") {
-      image(treasureImg, 350, 200, 100, 100);
+      if (treasureImg) image(treasureImg, 350, 200, 100, 100);
       fill(255, 230, 200);
       stroke(255, 165, 0);
       strokeWeight(4);
@@ -203,7 +210,7 @@ function draw() {
       for (let i = fallingStars.length - 1; i >= 0; i--) {
         let star = fallingStars[i];
         star.y += star.speed;
-        image(starImg, star.x, star.y, 20, 20);
+        if (starImg) image(starImg, star.x, star.y, 20, 20);
         if (star.y > height) {
           fallingStars.splice(i, 1);
         }

@@ -33,13 +33,34 @@ let loadedResources = 0;
 
 function preload() {
   // تحميل الصور
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png', (img) => zazaImg = img);
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png', (img) => jareerImg = img);
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png', (img) => treasureImg = img);
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png', (img) => starImg = img);
-  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png', (img) => rockImg = img);
-  loadResource(loadSound, 'https://freesound.org/data/previews/387/387232_5121236-lq.mp3', (sound) => collectSound = sound);
-  loadResource(loadSound, 'https://freesound.org/data/previews/503/503744_5121236-lq.mp3', (sound) => winSound = sound);
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png', (img) => {
+    zazaImg = img;
+    console.log("تم تحميل zaza.png بنجاح");
+  });
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png', (img) => {
+    jareerImg = img;
+    console.log("تم تحميل jareer.png بنجاح");
+  });
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png', (img) => {
+    treasureImg = img;
+    console.log("تم تحميل box.png بنجاح");
+  });
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png', (img) => {
+    starImg = img;
+    console.log("تم تحميل star.png بنجاح");
+  });
+  loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png', (img) => {
+    rockImg = img;
+    console.log("تم تحميل rock.png بنجاح");
+  });
+  loadResource(loadSound, 'https://freesound.org/data/previews/387/387232_5121236-lq.mp3', (sound) => {
+    collectSound = sound;
+    console.log("تم تحميل collectSound بنجاح");
+  });
+  loadResource(loadSound, 'https://freesound.org/data/previews/503/503744_5121236-lq.mp3', (sound) => {
+    winSound = sound;
+    console.log("تم تحميل winSound بنجاح");
+  });
 }
 
 function loadResource(loadFunction, url, callback) {
@@ -70,7 +91,7 @@ function updateLoadingBar() {
 
 function checkResources() {
   if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg) {
-    errorMessage = "فشل تحميل بعض الصور الأساسية. تأكد من رفع جميع الصور إلى المستودع.";
+    errorMessage = "فشل تحميل بعض الصور الأساسية. تأكد من أسماء الملفات والحالة الحرفية.";
     console.error("الموارد المفقودة:", {
       zazaImg: !!zazaImg,
       jareerImg: !!jareerImg,
@@ -143,36 +164,60 @@ function draw() {
       player.x = constrain(player.x, 0, width - 50);
       player.y = constrain(player.y, 0, height - 50);
 
-      if (player.img) image(player.img, player.x, player.y, 50, 50);
+      if (player.img) {
+        image(player.img, player.x, player.y, 50, 50);
+      } else {
+        console.warn("لم يتم عرض صورة اللاعب لأن player.img غير موجود");
+        fill(255, 0, 0); // عرض مربع أحمر بديل
+        rect(player.x, player.y, 50, 50);
+      }
 
       starBlink = (starBlink + 0.1) % TWO_PI;
       let starScale = 1 + sin(starBlink) * 0.1;
       for (let star of stars) {
-        if (!star.collected && starImg) {
-          push();
-          translate(star.x + 15, star.y + 15);
-          scale(starScale);
-          image(starImg, -15, -15, 30, 30);
-          pop();
+        if (!star.collected) {
+          if (starImg) {
+            push();
+            translate(star.x + 15, star.y + 15);
+            scale(starScale);
+            image(starImg, -15, -15, 30, 30);
+            pop();
+          } else {
+            console.warn("لم يتم عرض النجمة لأن starImg غير موجود");
+            fill(255, 255, 0); // عرض مربع أصفر بديل
+            rect(star.x, star.y, 30, 30);
+          }
         }
       }
 
-      if (!treasure.collected && treasureImg) {
-        let distanceToTreasure = dist(player.x, player.y, treasure.x, treasure.y);
-        if (distanceToTreasure < 150) {
-          treasureShake = sin(frameCount * 0.2) * 5;
+      if (!treasure.collected) {
+        if (treasureImg) {
+          let distanceToTreasure = dist(player.x, player.y, treasure.x, treasure.y);
+          if (distanceToTreasure < 150) {
+            treasureShake = sin(frameCount * 0.2) * 5;
+          } else {
+            treasureShake = 0;
+          }
+          image(treasureImg, treasure.x + treasureShake, treasure.y, 60, 60);
         } else {
-          treasureShake = 0;
+          console.warn("لم يتم عرض الكنز لأن treasureImg غير موجود");
+          fill(255, 215, 0); // عرض مربع ذهبي بديل
+          rect(treasure.x, treasure.y, 60, 60);
         }
-        image(treasureImg, treasure.x + treasureShake, treasure.y, 60, 60);
       }
 
       for (let obstacle of obstacles) {
-        if (rockImg) image(rockImg, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+        if (rockImg) {
+          image(rockImg, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+        } else {
+          console.warn("لم يتم عرض العقبة لأن rockImg غير موجود");
+          fill(150, 150, 150); // عرض مربع رمادي بديل
+          rect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+        }
       }
 
       for (let obstacle of obstacles) {
-        if (rockImg && dist(player.x + 25, player.y + 25, obstacle.x + obstacle.w / 2, obstacle.y + obstacle.h / 2) < 35) {
+        if (dist(player.x + 25, player.y + 25, obstacle.x + obstacle.w / 2, obstacle.y + obstacle.h / 2) < 35) {
           score = max(0, score - 1);
           player.x = 50;
           player.y = 500;
@@ -236,7 +281,13 @@ function draw() {
         text(questions[currentQuestion].answers[i], 300, 280 + i * 40);
       }
     } else if (gameState === "win") {
-      if (treasureImg) image(treasureImg, 350, 200, 100, 100);
+      if (treasureImg) {
+        image(treasureImg, 350, 200, 100, 100);
+      } else {
+        console.warn("لم يتم عرض الكنز في شاشة الفوز لأن treasureImg غير موجود");
+        fill(255, 215, 0);
+        rect(350, 200, 100, 100);
+      }
       fill(255, 230, 200);
       stroke(255, 165, 0);
       strokeWeight(4);
@@ -249,7 +300,13 @@ function draw() {
       for (let i = fallingStars.length - 1; i >= 0; i--) {
         let star = fallingStars[i];
         star.y += star.speed;
-        if (starImg) image(starImg, star.x, star.y, 20, 20);
+        if (starImg) {
+          image(starImg, star.x, star.y, 20, 20);
+        } else {
+          console.warn("لم يتم عرض النجوم المتساقطة لأن starImg غير موجود");
+          fill(255, 255, 0);
+          rect(star.x, star.y, 20, 20);
+        }
         if (star.y > height) {
           fallingStars.splice(i, 1);
         }
@@ -323,7 +380,7 @@ function stopPlayer() {
 
 function startGame(character) {
   if (!resourcesLoaded) {
-    alert("لا يمكن بدء اللعبة. هناك مشكلة في تحميل الصور الأساسية. تأكد من رفع الصور إلى المستودع.");
+    alert("لا يمكن بدء اللعبة. هناك مشكلة في تحميل الصور الأساسية. تأكد من أسماء الملفات والحالة الحرفية.");
     return;
   }
   selectedCharacter = character;

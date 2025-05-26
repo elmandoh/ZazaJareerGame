@@ -32,40 +32,39 @@ let totalResources = 5; // 5 صور فقط
 let loadedResources = 0;
 
 function preload() {
-  // تحميل الصور مع معالجة الأخطاء
+  // تحميل الصور مع تسجيل مفصل للأخطاء
   loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png', (img) => {
     zazaImg = img;
     console.log("تم تحميل zaza.png بنجاح");
-  }, () => console.error("فشل تحميل zaza.png"));
+  }, (err) => console.error("فشل تحميل zaza.png:", err));
   loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png', (img) => {
     jareerImg = img;
     console.log("تم تحميل jareer.png بنجاح");
-  }, () => console.error("فشل تحميل jareer.png"));
+  }, (err) => console.error("فشل تحميل jareer.png:", err));
   loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png', (img) => {
     treasureImg = img;
     console.log("تم تحميل box.png بنجاح");
-  }, () => console.error("فشل تحميل box.png"));
+  }, (err) => console.error("فشل تحميل box.png:", err));
   loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png', (img) => {
     starImg = img;
     console.log("تم تحميل star.png بنجاح");
-  }, () => console.error("فشل تحميل star.png"));
+  }, (err) => console.error("فشل تحميل star.png:", err));
   loadResource(loadImage, 'https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png', (img) => {
     rockImg = img;
     console.log("تم تحميل rock.png بنجاح");
-  }, () => console.error("فشل تحميل rock.png"));
+  }, (err) => console.error("فشل تحميل rock.png:", err));
 }
 
 function loadResource(loadFunction, url, successCallback, errorCallback) {
   try {
     loadFunction(url, successCallback, (err) => {
-      console.error(`فشل تحميل المورد: ${url}`, err);
-      if (errorCallback) errorCallback();
+      if (errorCallback) errorCallback(err);
       loadedResources++;
       updateLoadingBar();
     });
   } catch (error) {
-    console.error(`خطأ في تحميل المورد: ${url}`, error);
-    if (errorCallback) errorCallback();
+    console.error(`خطأ أثناء تحميل المورد: ${url}`, error);
+    if (errorCallback) errorCallback(error);
     loadedResources++;
     updateLoadingBar();
   }
@@ -81,7 +80,7 @@ function updateLoadingBar() {
 
 function checkResources() {
   if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg) {
-    errorMessage = "فشل تحميل بعض الصور الأساسية. تأكد من أسماء الملفات والروابط.";
+    errorMessage = "فشل تحميل بعض الصور الأساسية. تحقق من أسماء الملفات والروابط في المستودع.";
     console.error("الموارد المفقودة:", {
       zazaImg: !!zazaImg,
       jareerImg: !!jareerImg,
@@ -370,7 +369,7 @@ function stopPlayer() {
 
 function startGame(character) {
   if (!resourcesLoaded) {
-    alert("لا يمكن بدء اللعبة. هناك مشكلة في تحميل الصور الأساسية. تأكد من أسماء الملفات والروابط.");
+    alert("لا يمكن بدء اللعبة. هناك مشكلة في تحميل الصور الأساسية. تحقق من أسماء الملفات والروابط.");
     return;
   }
   selectedCharacter = character;

@@ -28,7 +28,7 @@ let fallingStars = [];
 let collisionFlash = 0;
 let resourcesLoaded = false;
 let errorMessage = "";
-let totalResources = 7; // عدد الموارد (5 صور + 2 أصوات)
+let totalResources = 5; // تعديل عدد الموارد إلى 5 صور فقط
 let loadedResources = 0;
 
 function preload() {
@@ -53,14 +53,15 @@ function preload() {
     rockImg = img;
     console.log("تم تحميل rock.png بنجاح");
   });
-  loadResource(loadSound, 'https://freesound.org/data/previews/387/387232_5121236-lq.mp3', (sound) => {
-    collectSound = sound;
-    console.log("تم تحميل collectSound بنجاح");
-  });
-  loadResource(loadSound, 'https://freesound.org/data/previews/503/503744_5121236-lq.mp3', (sound) => {
-    winSound = sound;
-    console.log("تم تحميل winSound بنجاح");
-  });
+  // تعليق تحميل الأصوات مؤقتًا
+  // loadResource(loadSound, 'https://freesound.org/data/previews/387/387232_5121236-lq.mp3', (sound) => {
+  //   collectSound = sound;
+  //   console.log("تم تحميل collectSound بنجاح");
+  // });
+  // loadResource(loadSound, 'https://freesound.org/data/previews/503/503744_5121236-lq.mp3', (sound) => {
+  //   winSound = sound;
+  //   console.log("تم تحميل winSound بنجاح");
+  // });
 }
 
 function loadResource(loadFunction, url, callback) {

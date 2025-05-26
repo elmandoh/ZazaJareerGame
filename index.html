@@ -6,6 +6,7 @@
   <title>مغامرة ظاظا وجرجير</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.min.js"></script>
 </head>
 <body>
   <div id="game-container">
@@ -14,6 +15,8 @@
       <p>اختر شخصيتك واجمع نجوم المعرفة لحل الألغاز وفتح الكنز!</p>
       <button onclick="startGame('zaza')">العب بظاظا</button>
       <button onclick="startGame('jareer')">العب بجرجير</button>
+      <p id="loading-text">Loading...</p>
+      <p id="error-text" style="color: red; display: none;"></p>
     </div>
     <div id="controls">
       <button id="up-btn" ontouchstart="movePlayer('up')" ontouchend="stopPlayer()">↑</button>

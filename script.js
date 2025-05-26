@@ -34,13 +34,12 @@ function preload() {
     zazaImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/zaza.png');
     jareerImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/jareer.png');
     treasureImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/box.png');
-    // استبدال الصور المكسورة بروابط مؤقتة من Placehold.co
-    starImg = loadImage('https://placehold.co/30x30/FFD700/FFD700/png');
-    rockImg = loadImage('https://placehold.co/40x40/808080/808080/png');
+    starImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/star.png');
+    rockImg = loadImage('https://raw.githubusercontent.com/elmandoh/ZazaJareerGame/main/rock.png');
     collectSound = loadSound('https://freesound.org/data/previews/387/387232_5121236-lq.mp3');
     winSound = loadSound('https://freesound.org/data/previews/503/503744_5121236-lq.mp3');
   } catch (error) {
-    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع الصور إلى المستودع.";
+    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع جميع الصور إلى المستودع.";
     console.error("خطأ في تحميل الموارد:", error);
   }
 }
@@ -52,7 +51,16 @@ function setup() {
   canvas.style('height', '100%');
   
   if (!zazaImg || !jareerImg || !treasureImg || !starImg || !rockImg || !collectSound || !winSound) {
-    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع الصور إلى المستودع.";
+    errorMessage = "فشل تحميل بعض الموارد. تأكد من رفع جميع الصور إلى المستودع.";
+    console.error("الموارد المفقودة:", {
+      zazaImg: !!zazaImg,
+      jareerImg: !!jareerImg,
+      treasureImg: !!treasureImg,
+      starImg: !!starImg,
+      rockImg: !!rockImg,
+      collectSound: !!collectSound,
+      winSound: !!winSound
+    });
   } else {
     resourcesLoaded = true;
   }
